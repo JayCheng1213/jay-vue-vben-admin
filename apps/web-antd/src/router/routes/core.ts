@@ -7,6 +7,7 @@ import { $t } from '#/locales';
 
 const BasicLayout = () => import('#/layouts/basic.vue');
 const AuthPageLayout = () => import('#/layouts/auth.vue');
+
 /** 全局404页面 */
 const fallbackNotFoundRoute: RouteRecordRaw = {
   component: () => import('#/views/_core/fallback/not-found.vue'),
@@ -36,7 +37,16 @@ const coreRoutes: RouteRecordRaw[] = [
     name: 'Root',
     path: '/',
     redirect: preferences.app.defaultHomePath,
-    children: [],
+    children: [
+      {
+        name: 'MyTest',
+        path: 'my-test',
+        component: () => import('#/views/my-test/index.vue'),
+        meta: {
+          title: 'My Test Page',
+        },
+      },
+    ],
   },
   {
     component: AuthPageLayout,
