@@ -1,5 +1,5 @@
-import 'ant-design-vue/es/style/reset.css';
 import { createApp, watchEffect } from 'vue';
+
 import { registerAccessDirective } from '@vben/access';
 import { registerLoadingDirective } from '@vben/common-ui/es/loading';
 import { preferences } from '@vben/preferences';
@@ -15,6 +15,8 @@ import { initComponentAdapter } from './adapter/component';
 import { initSetupVbenForm } from './adapter/form';
 import App from './app.vue';
 import { router } from './router';
+
+import 'ant-design-vue/es/style/reset.css';
 
 async function bootstrap(namespace: string) {
   // 初始化组件适配器
