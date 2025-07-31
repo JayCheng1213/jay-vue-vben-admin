@@ -1,63 +1,56 @@
-<template>
-  <div style="padding: 24px">
-    <!-- 卡片元件 -->
-    <a-card title="使用者資訊卡片" style="margin-bottom: 24px">
-      <p>這裡是卡片內的內容，可以放簡介、操作提示等等。</p>
-    </a-card>
+<script lang="ts">
+import { defineComponent, onMounted, ref } from 'vue';
 
-    <!-- 表格元件 -->
-    <a-table :columns="columns" :data-source="dataSource" :pagination="false" />
-  </div>
-</template>
+import { Card, Table } from 'ant-design-vue';
+import axios from 'axios';
 
-<script setup lang="ts">
-import { Card, Table } from 'ant-design-vue'
-import { ref } from 'vue'
-
-
-defineOptions({
+export default defineComponent({
+  name: 'MyTest',
   components: {
-    'a-card': Card,
-    'a-table': Table,
+    ACard: Card,
+    ATable: Table,
   },
-})
+  setup() {
+    const userList = ref([]);
+    const loading = ref(true);
 
-// 表格欄位
-const columns = [
-  {
-    title: '姓名',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: '年齡',
-    dataIndex: 'age',
-    key: 'age',
-  },
-  {
-    title: '地址',
-    dataIndex: 'address',
-    key: 'address',
-  },
-]
+    const columns = [
+      { title: '姓名', dataIndex: 'name', key: 'name' },
+      { title: '用戶名', dataIndex: 'username', key: 'username' },
+      { title: '電子郵件', dataIndex: 'email', key: 'email' },
+      { title: '公司名稱', dataIndex: ['company', 'name'], key: 'company' },
+      { title: '城市', dataIndex: ['address', 'city'], key: 'city' },
+    ];
 
-// 表格資料
-const dataSource = ref([
-  {
-    key: '1',
-    name: 'Jaycheng',
-    age: 21,
-    address: '台北市',
+    const fetchUsers = async () => {
+      loading.value = true;
+      try {
+        const res = await axios.get(
+          'https://jsonplaceholder.typicode.com/users',
+        );
+        userList.value = res.data;
+      } catch (error) {
+        console.error('載入使用者資料失敗:', error);
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    onMounted(() => {
+      fetchUsers();
+    });
+
+    return {
+      userList,
+      columns,
+      loading,
+    };
   },
-  {
-    key: '2',
-    name: 'Alex',
-    age: 22,
-    address: '高雄市',
-  },
-])
+});
 </script>
 
-<style scoped>
-/* 你也可以在這裡加上更多自訂樣式 */
-</style>
+<template>
+  <ACard title="使用者列表" :loading="loading">
+    <ATable :columns="columns" :data-source="userList" row-key="id" bordered />
+  </ACard>
+</template>
