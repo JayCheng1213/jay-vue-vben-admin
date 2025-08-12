@@ -1,56 +1,46 @@
-<script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+<template>
+  <div class="p-4">
+    <div class="border p-4 rounded shadow mb-4 bg-white">
+      <h2 class="text-lg font-bold mb-2">歡迎來到 My Test 頁面</h2>
+      <p class="text-gray-600">這是一張示範卡片</p>
+    </div>
 
-import { Card, Table } from 'ant-design-vue';
-import axios from 'axios';
+    <table class="table-auto w-full border-collapse border border-gray-400">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="border px-4 py-2">姓名</th>
+          <th class="border px-4 py-2">年齡</th>
+          <th class="border px-4 py-2">地址</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="user in userList" :key="user.id">
+          <td class="border px-4 py-2">{{ user.name }}</td>
+          <td class="border px-4 py-2">{{ user.age }}</td>
+          <td class="border px-4 py-2">{{ user.address }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
 
-export default defineComponent({
-  name: 'MyTest',
-  components: {
-    ACard: Card,
-    ATable: Table,
-  },
-  setup() {
-    const userList = ref([]);
-    const loading = ref(true);
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 
-    const columns = [
-      { title: '姓名', dataIndex: 'name', key: 'name' },
-      { title: '用戶名', dataIndex: 'username', key: 'username' },
-      { title: '電子郵件', dataIndex: 'email', key: 'email' },
-      { title: '公司名稱', dataIndex: ['company', 'name'], key: 'company' },
-      { title: '城市', dataIndex: ['address', 'city'], key: 'city' },
-    ];
+const userList = ref([]);
 
-    const fetchUsers = async () => {
-      loading.value = true;
-      try {
-        const res = await axios.get(
-          'https://jsonplaceholder.typicode.com/users',
-        );
-        userList.value = res.data;
-      } catch (error) {
-        console.error('載入使用者資料失敗:', error);
-      } finally {
-        loading.value = false;
-      }
-    };
+const getUserList = () => {
+  return Promise.resolve({
+    items: [
+      { id: 1, name: '小明', age: 20, address: '台北市' },
+      { id: 2, name: '小華', age: 22, address: '新北市' },
+      { id: 3, name: '小美', age: 21, address: '高雄市' },
+    ],
+  });
+};
 
-    onMounted(() => {
-      fetchUsers();
-    });
-
-    return {
-      userList,
-      columns,
-      loading,
-    };
-  },
+onMounted(async () => {
+  const res = await getUserList();
+  userList.value = res.items;
 });
 </script>
-
-<template>
-  <ACard title="使用者列表" :loading="loading">
-    <ATable :columns="columns" :data-source="userList" row-key="id" bordered />
-  </ACard>
-</template>
