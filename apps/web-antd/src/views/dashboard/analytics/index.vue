@@ -20,6 +20,33 @@ import AnalyticsVisitsSales from './analytics-visits-sales.vue';
 import AnalyticsVisitsSource from './analytics-visits-source.vue';
 import AnalyticsVisits from './analytics-visits.vue';
 
+// === 新增 API Modal 功能 ===
+import { ref } from 'vue';
+import { Modal, Button } from 'ant-design-vue';
+import axios from 'axios';
+
+const isModalVisible = ref(false);
+const modalTitle = ref('');
+const modalContent = ref('');
+
+const showModal = async () => {
+  try {
+    const { data } = await axios.get('https://jsonplaceholder.typicode.com/posts/1');
+    modalTitle.value = data.title;
+    modalContent.value = data.body;
+    isModalVisible.value = true;
+  } catch (error) {
+    modalTitle.value = '錯誤';
+    modalContent.value = '無法取得資料';
+    isModalVisible.value = true;
+  }
+};
+
+const handleOk = () => {
+  isModalVisible.value = false;
+};
+
+// === 原本的 Dashboard 資料 ===
 const overviewItems: AnalysisOverviewItem[] = [
   {
     icon: SvgCardIcon,
@@ -65,6 +92,17 @@ const chartTabs: TabOption[] = [
 
 <template>
   <div class="p-5">
+    <!-- 新增按鈕 -->
+    <Button type="primary" @click="showModal" class="mb-4">
+      顯示 API 資料
+    </Button>
+
+    <!-- API Modal -->
+    <Modal v-model:open="isModalVisible" :title="modalTitle" @ok="handleOk">
+      <p>{{ modalContent }}</p>
+    </Modal>
+
+    <!-- 原本的儀表板內容 -->
     <AnalysisOverview :items="overviewItems" />
     <AnalysisChartsTabs :tabs="chartTabs" class="mt-5">
       <template #trends>
